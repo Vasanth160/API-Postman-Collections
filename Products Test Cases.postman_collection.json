@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "a7609a02-2b2e-478c-b5c1-5db840f2c506",
+		"name": "Products Test Cases",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46057230",
+		"_collection_link": "https://crimson-shadow-702963.postman.co/workspace/Testing-Exercise~93bdfd29-b71a-4f13-8697-0c87e006c926/collection/46057230-a7609a02-2b2e-478c-b5c1-5db840f2c506?action=share&source=collection_link&creator=46057230"
+	},
+	"item": [
+		{
+			"name": "Get All Products",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// Store each product id in a collection variable\r",
+							"const productIds = responseData.map(product => product.id);\r",
+							"pm.collectionVariables.set(\"productIds\", JSON.stringify(productIds));\r",
+							"\r",
+							"// Set the product id 7 for the next request\r",
+							"if (productIds.length >= 7) {\r",
+							"    pm.collectionVariables.set(\"productId7\", productIds[6]); // productIds[6] corresponds to the 7th product\r",
+							"}\r",
+							"\r",
+							"pm.test(\"Response contains 20 products\", function () {\r",
+							"    pm.expect(responseData).to.be.an('array').that.has.lengthOf(20);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"All products have a unique id\", function () {\r",
+							"    const uniqueIds = new Set(productIds);\r",
+							"    pm.expect(uniqueIds.size).to.equal(productIds.length);\r",
+							"});\r",
+							"\r",
+							"// Verify the product schema\r",
+							"pm.test(\"Each product has the correct schema\", function () {\r",
+							"    responseData.forEach(product => {\r",
+							"        pm.expect(product).to.be.an('object');\r",
+							"        pm.expect(product).to.have.all.keys('id', 'title', 'price', 'description', 'category', 'image', 'rating');\r",
+							"        pm.expect(product.id).to.be.a('number');\r",
+							"        pm.expect(product.title).to.be.a('string');\r",
+							"        pm.expect(product.price).to.be.a('number');\r",
+							"        pm.expect(product.description).to.be.a('string');\r",
+							"        pm.expect(product.category).to.be.a('string');\r",
+							"        pm.expect(product.image).to.be.a('string');\r",
+							"        pm.expect(product.rating).to.be.an('object');\r",
+							"        pm.expect(product.rating).to.have.all.keys('rate', 'count');\r",
+							"        pm.expect(product.rating.rate).to.be.a('number');\r",
+							"        pm.expect(product.rating.count).to.be.a('number');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Product id 2 is set correctly\", function () {\r",
+							"    responseData.forEach(product => {\r",
+							"        if (product.id === 2) {\r",
+							"            pm.expect(product.id).to.equal(2);\r",
+							"            pm.expect(product.title).to.equal(\"Mens Casual Premium Slim Fit T-Shirts \");\r",
+							"        }\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://fakestoreapi.com/products",
+					"protocol": "https",
+					"host": [
+						"fakestoreapi",
+						"com"
+					],
+					"path": [
+						"products"
+					]
+				},
+				"description": "Generated from cURL: curl -X GET 'https://fakestoreapi.com/products'"
+			},
+			"response": []
+		},
+		{
+			"name": "Get needed Products using id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"productId\", 7);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://fakestoreapi.com/products/{{productId}}",
+					"protocol": "https",
+					"host": [
+						"fakestoreapi",
+						"com"
+					],
+					"path": [
+						"products",
+						"{{productId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the products based on the limit",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"limited number\" ,10);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsondata = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate the length of the Response should match the Limit Parameter\", () => {\r",
+							"    pm.expect(jsondata.length).to.eql(pm.collectionVariables.get(\"limited number\"));\r",
+							"});\r",
+							"\r",
+							"console.log(jsondata.length);\r",
+							"\r",
+							"//Below is to validate the Ascending order\r",
+							"\r",
+							"// pm.test(\"Validate the response should be in ascending order by id\", () => {\r",
+							"//     for (let i = 0; i < jsondata.length - 1; i++) {\r",
+							"//         pm.expect(jsondata[i].id).to.be.lessThan(jsondata[i + 1].id);\r",
+							"//         console.log(jsondata[i].id);\r",
+							"        \r",
+							"//     }\r",
+							"\r",
+							"\r",
+							"// });\r",
+							"\r",
+							"pm.test(\"Validate the response should be in descending order by id\", () => {\r",
+							"    for (let i = 0; i < jsondata.length - 1; i++) {\r",
+							"        pm.expect(jsondata[i].id).to.be.greaterThan(jsondata[i + 1].id);\r",
+							"        console.log(jsondata[i].id);\r",
+							"        \r",
+							"    }\r",
+							"\r",
+							"\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://fakestoreapi.com/products?limit={{limited number}}&sort=desc",
+					"protocol": "https",
+					"host": [
+						"fakestoreapi",
+						"com"
+					],
+					"path": [
+						"products"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "{{limited number}}"
+						},
+						{
+							"key": "sort",
+							"value": "desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://fakestoreapi.com/products/category",
+					"protocol": "https",
+					"host": [
+						"fakestoreapi",
+						"com"
+					],
+					"path": [
+						"products",
+						"category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Products by Category",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var categories=[\r",
+							"    \"electronics\",\r",
+							"    \"jewelery\",\r",
+							"    \"men's clothing\",\r",
+							"    \"women's clothing\"\r",
+							"];\r",
+							"\r",
+							"pm.collectionVariables.set(\"category\",JSON.stringify(categories));\r",
+							"let categoriesStr = pm.collectionVariables.get(\"category\");\r",
+							"let categoriesArray = JSON.parse(categoriesStr);\r",
+							"\r",
+							"console.log(categoriesArray[1]);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://fakestoreapi.com/products/category/jewelery",
+					"protocol": "https",
+					"host": [
+						"fakestoreapi",
+						"com"
+					],
+					"path": [
+						"products",
+						"category",
+						"jewelery"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "productIds",
+			"value": ""
+		},
+		{
+			"key": "productId7",
+			"value": ""
+		},
+		{
+			"key": "productId",
+			"value": ""
+		},
+		{
+			"key": "limited number",
+			"value": ""
+		},
+		{
+			"key": "category",
+			"value": ""
+		}
+	]
+}

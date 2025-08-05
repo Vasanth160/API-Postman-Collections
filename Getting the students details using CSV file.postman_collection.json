@@ -1,0 +1,151 @@
+{
+	"info": {
+		"_postman_id": "46c16693-7f37-4cce-88bf-661297d1d461",
+		"name": "Getting the students details using CSV file",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46057230"
+	},
+	"item": [
+		{
+			"name": "Get all the student details using CSV file",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let studentsid = pm.iterationData.get(\"id\");\r",
+							"//let studentname = pm.iterationData.get(\"name\");\r",
+							"\r",
+							"pm.environment.set(\"id_env\", studentsid);\r",
+							"//pm.environment.set(\"name_env\", studentname);\r",
+							"\r",
+							"console.log(studentsid);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"var jsondata=pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate the Id in the response body should match with DATA file\", function () {\r",
+							"    let responseId = String(jsondata.id).trim();\r",
+							"    let expectedId = String(pm.environment.get(\"id_env\")).trim();\r",
+							"    pm.expect(responseId).to.eql(expectedId);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"var nameOfTheStudent=jsondata.name;\r",
+							"\r",
+							"console.log(\"Name of the student is \" + nameOfTheStudent);\r",
+							"\r",
+							"pm.test(\"Validate that Vasanth is the only student who has Knowledge field\", function () {\r",
+							"    if(nameOfTheStudent===\"Vasanth\"){\r",
+							"        pm.expect(jsondata).to.have.property(\"Knowledge\");\r",
+							"        pm.expect(jsondata.Knowledge).to.exist;\r",
+							"       // pm.expect(jsondata.Knowledge).to.be.an('array');\r",
+							"        pm.expect(jsondata.Knowledge).to.have.members([\"Java\",\"Selenium\",\"Postman\"]);\r",
+							"    }\r",
+							"    else{\r",
+							"        pm.expect(jsondata.Knowledge).to.not.exist; \r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_ddEnv}}/{{id_env}}",
+					"host": [
+						"{{Url_ddEnv}}"
+					],
+					"path": [
+						"{{id_env}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Only male data",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let Gender=pm.iterationData.get(\"gender\");\r",
+							"let Maleid=String(pm.iterationData.get(\"id\")).trim();\r",
+							"\r",
+							"\r",
+							"\r",
+							"if (Gender == \"Male\") {\r",
+							"    pm.environment.set(\"gender\", Gender);\r",
+							"    pm.environment.set(\"MaleId\", Maleid); // used in GET URL\r",
+							"} else {\r",
+							"   \r",
+							"    // If not Male → skip this request entirely\r",
+							"    pm.execution.skipRequest();\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var MaleData=pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate that the response contains only MaleData\", ()=> {\r",
+							"    pm.expect(MaleData.gender).to.exist.and.to.eql(pm.environment.get(\"gender\"));\r",
+							"    pm.expect(MaleData.id).to.eql(pm.environment.get(\"MaleId\"));\r",
+							"    console.log(\"Name of the Male Student is \"+ MaleData.name);\r",
+							"\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_ddEnv}}/{{MaleId}}",
+					"host": [
+						"{{Url_ddEnv}}"
+					],
+					"path": [
+						"{{MaleId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

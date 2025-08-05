@@ -1,0 +1,409 @@
+{
+	"info": {
+		"_postman_id": "04196b16-ac5b-4b17-9c2f-46a6ab428182",
+		"name": "Testing Own Student data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46057230"
+	},
+	"item": [
+		{
+			"name": "Get All Student datas",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"getting data from Student\",\"students\");\r",
+							"\r",
+							"pm.collectionVariables.set(\"UrlCollection\", \"http://localhost:3000/\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"    const responseJSON = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Validate all fields expect vasanth object\", function () {\r",
+							"    pm.expect(responseJSON).to.be.an('array').that.is.not.empty;\r",
+							"\r",
+							"    responseJSON.forEach(student => {\r",
+							"        pm.expect(student).to.be.an('object');\r",
+							"        if(student.name!=='Vasanth'){\r",
+							"        pm.expect(student).to.have.all.keys('name', 'gender', 'physics', 'maths', 'english', 'id').and.not.to.have.property('Knowledge');\r",
+							"        pm.expect(student.name).to.be.a('string');\r",
+							"        pm.expect(student.gender).to.be.a('string');\r",
+							"        pm.expect(student.physics).to.be.a('number');\r",
+							"        pm.expect(student.maths).to.be.a('number');\r",
+							"        pm.expect(student.english).to.be.a('number');\r",
+							"        pm.expect(student.id).to.be.a('string');\r",
+							"        // Name must be a non-empty string\r",
+							"        pm.expect(student.name).to.be.exist.and.to.be.a('string').and.that.has.lengthOf.at.least(1, \"Name should not be empty\");\r",
+							"      //  pm.expect(student).not.to.have.property('Knowledge').and.to.have\r",
+							"        pm.expect(student.physics).that.has.at.least(2,\"Have to Score atleast 35\").and.to.be.a('number');\r",
+							"        }\r",
+							"    });\r",
+							"    \r",
+							"   \r",
+							"    // ID must be a non-empty string\r",
+							"    responseJSON.forEach(student => {\r",
+							"        pm.expect(student.id).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"ID should not be empty\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has Content-Type header set to application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.eql(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each student's gender is either 'Male' or 'Female'\", function () {\r",
+							"    const responseJSON = pm.response.json();\r",
+							"    responseJSON.forEach(student => {  // if we want to check for each student we an enable this\r",
+							"      pm.expect(student.gender).to.be.oneOf(['Male','Female']);  \r",
+							" });\r",
+							"           \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Vasanth has knowledge of Java and Selenium\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"    responseData.forEach(student => {\r",
+							"        pm.expect(student).to.be.an('object');\r",
+							"        if (student.name =='Vasanth') {\r",
+							"            pm.expect(student).to.have.all.keys('name', 'gender', 'physics', 'maths', 'english', 'id','Knowledge');\r",
+							"            pm.expect(student.Knowledge).to.have.members(['Java','Selenium','Postman']);\r",
+							"        }\r",
+							"       \r",
+							"       \r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"let students = pm.response.json();\r",
+							"\r",
+							"let uniqueStudents = [];\r",
+							"let seen = new Set();\r",
+							"\r",
+							"students.forEach(student => {\r",
+							"    let key = `${student.name}-${student.gender}-${student.physics}-${student.maths}-${student.english}`;\r",
+							"    if (!seen.has(key)) {\r",
+							"        uniqueStudents.push(student);\r",
+							"        seen.add(key);\r",
+							"    }\r",
+							"});\r",
+							"console.log(\"Unique Students:\", uniqueStudents);\r",
+							"\r",
+							"console.log(pm.collectionVariables.get(\"UrlCollection\"));\r",
+							"console.log(pm.variables.get(\"getting data from Student\"))\r",
+							"\r",
+							"\r",
+							"pm.collectionVariables.unset(\"UrlCollection\");\r",
+							"pm.variables.unset(\"getting data from Student\");\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \r\n    \"name\": \"Nijantha\",\r\n    \"gender\": \"Male\",\r\n    \"physics\": 100,\r\n    \"maths\": 100,\r\n    \"english\": 98\r\n}"
+				},
+				"url": {
+					"raw": "{{UrlCollection}}{{getting data from Student}}",
+					"host": [
+						"{{UrlCollection}}{{getting data from Student}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get  Only oneStudent Detail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonvalue=pm.response.json();\r",
+							"\r",
+							"//it will check only one\r",
+							"pm.test(\"Validated the Knowledge field of Vasanth\",()=> {\r",
+							"    pm.expect(jsonvalue.Knowledge).to.include(\"Java\");\r",
+							"    //it will check both\r",
+							"    pm.expect(jsonvalue.Knowledge).to.have.members([\"Java\",\"Selenium\",\"Postman\"]);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate all the field of Vasanth\", () => {\r",
+							"    pm.expect(jsonvalue.name).to.equal(\"Vasanth\");\r",
+							"    pm.expect(jsonvalue.gender).to.equal(\"Male\");\r",
+							"    pm.expect(jsonvalue.physics).to.equal(100);\r",
+							"    pm.expect(jsonvalue.maths).to.eql(100);\r",
+							"    pm.expect(jsonvalue.english).to.equal(100);\r",
+							"    pm.expect(jsonvalue.Knowledge).to.be.a('array');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate the json Schema of the Response Body\",()=> {\r",
+							"    var schema = {\r",
+							"    \"type\": \"object\",\r",
+							"    \r",
+							"    \"properties\": {\r",
+							"        \"name\": { \"type\": \"string\" },\r",
+							"        \"gender\": { \"type\": \"string\" },\r",
+							"        \"physics\": { \"type\": \"number\" },\r",
+							"        \"maths\": { \"type\": \"number\" },\r",
+							"        \"english\": { \"type\": \"number\" },\r",
+							"        \"id\": { \"type\": \"string\" },\r",
+							"        \"Knowledge\": {\r",
+							"            \"type\": \"array\",\r",
+							"            \"items\": { \"type\": \"string\" },\r",
+							"            \"minItems\": 1\r",
+							"        }\r",
+							"    },\r",
+							"    \"required\": [\"name\", \"gender\", \"physics\", \"maths\", \"english\", \"id\", \"Knowledge\"],\r",
+							"    \"additionalProperties\": false\r",
+							"};\r",
+							"    pm.expect(jsonvalue).to.be.jsonSchema(schema);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_qaEnv}}students/4bc7",
+					"host": [
+						"{{Url_qaEnv}}students"
+					],
+					"path": [
+						"4bc7"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Created data for Nijanth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData).to.have.all.keys('id', 'name', 'gender', 'physics', 'maths', 'english');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"The id must be a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.id).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate that the scores for physics, maths, and english are non-negative integers\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    // Check that each score is a non-negative integer\r",
+							"    [responseData.physics, responseData.maths, responseData.english].forEach(score => {\r",
+							"        pm.expect(score).to.be.a('number').and.to.be.at.least(0).and.to.satisfy(Number.isInteger, \"Score must be a non-negative integer\");\r",
+							"    });\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"name\": \"Nijanthan\",\r\n        \"gender\": \"Male\",\r\n        \"physics\": 100,\r\n        \"maths\": 100,\r\n        \"english\": 98\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url_Collection}}students",
+					"host": [
+						"{{Url_Collection}}students"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Updated the name",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \r\n    \"name\": \"Nijantha\",\r\n    \"gender\": \"Male\",\r\n    \"physics\": 100,\r\n    \"maths\": 100,\r\n    \"english\": 98\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/students/b59e",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students",
+						"b59e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Deleted on Data",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:3000/students/a6ab",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students",
+						"a6ab"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Added knowledge field",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n{\r\n    \"Knowledge\":[\"Java\",\"Selenium\",\"Postman\"]\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/students/4bc7",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students",
+						"4bc7"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Url_Collection",
+			"value": "http://localhost:3000/",
+			"type": "string"
+		},
+		{
+			"key": "UrlCollection",
+			"value": ""
+		}
+	]
+}
