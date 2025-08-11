@@ -164,6 +164,14 @@
       "physics": 100,
       "maths": 100,
       "english": 98
+    },
+    {
+      "id": "194a",
+      "name": "Nijanthan",
+      "gender": "Male",
+      "physics": 100,
+      "maths": 100,
+      "english": 98
     }
   ]
 }
